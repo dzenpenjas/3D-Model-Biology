@@ -1,0 +1,6 @@
+{
+  "name": "ALCO Biology 3D – Sistem Pencernaan",
+  "description": "Aplikasi edukasi interaktif visualisasi 3D dan simulasi perjalanan makanan pada sistem pencernaan manusia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
