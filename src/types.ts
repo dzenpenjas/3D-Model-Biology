@@ -19,6 +19,9 @@ export interface DigestiveStep {
   index: number;
   name: string;
   latinName: string;
+  mainFunction: string; // Level 1: 1 kalimat fungsi utama
+  foodAction: string; // Level 1: 1 kalimat apa yang terjadi pada makanan
+  keyFact: string; // Level 1: 1 fakta penting
   description: string;
   function: string;
   foodState: string;
@@ -38,6 +41,8 @@ export interface AccessoryOrganInfo {
   name: string;
   latinName: string;
   role: string;
+  mainFunction: string;
+  keyFact: string;
   description: string;
   function: string;
   secretion: string;

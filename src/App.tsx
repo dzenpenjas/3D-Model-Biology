@@ -89,7 +89,7 @@ export default function App() {
       <main className="flex-1 flex overflow-hidden relative">
         {/* Left Column: Daftar Organ & Progress */}
         <div
-          className={`w-full md:w-72 lg:w-80 h-full flex-shrink-0 z-10 transition-all ${
+          className={`w-full md:w-64 lg:w-72 h-full flex-shrink-0 z-10 transition-all ${
             mobileTab === 'timeline'
               ? 'block absolute inset-0 md:relative md:block'
               : 'hidden md:block'
@@ -154,7 +154,7 @@ export default function App() {
 
         {/* Right Column: Learning Panel (Fungsi & Penjelasan Organ) */}
         <div
-          className={`w-full md:w-80 lg:w-96 h-full flex-shrink-0 z-10 transition-all ${
+          className={`w-full md:w-72 lg:w-80 h-full flex-shrink-0 z-10 transition-all ${
             mobileTab === 'info'
               ? 'block absolute inset-0 md:relative md:block'
               : 'hidden md:block'
