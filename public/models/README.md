@@ -1,7 +1,12 @@
 # Direktori Model 3D Organ (.glb)
 
-Folder ini disiapkan untuk menyimpan aset model 3D berekstensi `.glb` (glTF binary) untuk organ sistem pencernaan manusia:
+Folder ini disiapkan untuk menampung aset model 3D anatomi berekstensi `.glb` (glTF binary) untuk sistem pencernaan manusia:
 
+### 1. Model Utama (Unified Model):
+- **`public/models/digestive-system.glb`**
+  Model lengkap sistem pencernaan manusia dalam satu scene (memuat esofagus, lambung, hati, kantong empedu, pankreas, usus halus, usus besar, rektum). Jika model ini tersedia, aplikasi secara otomatis menggunakannya sebagai visual utama.
+
+### 2. Model Parsial Alternatif:
 1. `stomach.glb` - Organ Lambung (Ventrikulus)
 2. `liver.glb` - Organ Hati (Hepar)
 3. `pancreas.glb` - Kelenjar Pankreas

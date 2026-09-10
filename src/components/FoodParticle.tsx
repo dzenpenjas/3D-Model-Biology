@@ -2,7 +2,8 @@ import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
-import { digestiveCurve } from '../data/digestiveSteps';
+import { digestiveFoodCurve } from '../data/foodPath';
+import { SHOW_FOOD_PATH } from '../data/digestiveModelConfig';
 import { DigestiveStageId } from '../types';
 
 interface FoodParticleProps {
@@ -13,16 +14,18 @@ interface FoodParticleProps {
 
 export const FoodPathwayTrack: React.FC = () => {
   const tubeGeometry = useMemo(() => {
-    return new THREE.TubeGeometry(digestiveCurve, 220, 0.016, 8, false);
+    return new THREE.TubeGeometry(digestiveFoodCurve, 220, 0.016, 8, false);
   }, []);
+
+  if (!SHOW_FOOD_PATH) return null;
 
   return (
     <mesh geometry={tubeGeometry}>
       <meshBasicMaterial
         color="#06b6d4"
         transparent
-        opacity={0.16}
-        wireframe={false}
+        opacity={0.25}
+        wireframe={true}
       />
     </mesh>
   );
@@ -131,7 +134,7 @@ export const FoodParticle: React.FC<FoodParticleProps> = ({
   // Update particle position along curve
   useFrame(({ clock }) => {
     const t = Math.max(0, Math.min(1, progress));
-    const point = digestiveCurve.getPointAt(t);
+    const point = digestiveFoodCurve.getPointAt(t);
 
     if (coreRef.current) {
       coreRef.current.position.copy(point);
@@ -164,9 +167,9 @@ export const FoodParticle: React.FC<FoodParticleProps> = ({
       const trailT1 = Math.max(0, t - 0.01);
       const trailT2 = Math.max(0, t - 0.02);
       const trailT3 = Math.max(0, t - 0.03);
-      const p1 = digestiveCurve.getPointAt(trailT1);
-      const p2 = digestiveCurve.getPointAt(trailT2);
-      const p3 = digestiveCurve.getPointAt(trailT3);
+      const p1 = digestiveFoodCurve.getPointAt(trailT1);
+      const p2 = digestiveFoodCurve.getPointAt(trailT2);
+      const p3 = digestiveFoodCurve.getPointAt(trailT3);
 
       const c1 = trailGroupRef.current.children[0];
       const c2 = trailGroupRef.current.children[1];
