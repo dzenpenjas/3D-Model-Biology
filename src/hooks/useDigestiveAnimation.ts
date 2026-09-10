@@ -20,7 +20,7 @@ export function useDigestiveAnimation() {
   const [activeStageId, setActiveStageId] = useState<DigestiveStageId>('mouth');
   const [selectedOrganId, setSelectedOrganId] = useState<OrganId>('mouth');
   const [hoveredOrgan, setHoveredOrgan] = useState<OrganId | null>(null);
-  const [cameraPreset, setCameraPreset] = useState<'front' | 'side' | 'focus' | 'reset' | null>(null);
+  const [cameraPreset, setCameraPreset] = useState<'front' | 'side' | 'reset' | null>(null);
 
   const lastTimeRef = useRef<number | null>(null);
   const reqAnimRef = useRef<number | null>(null);

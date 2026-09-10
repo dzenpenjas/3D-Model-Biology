@@ -8,24 +8,28 @@ export const DIGESTIVE_STEPS: DigestiveStep[] = [
     name: 'Mulut',
     latinName: 'Cavum Oris',
     description:
-      'Pintu masuk utama makanan ke dalam tubuh. Di sini terjadi proses pencernaan mekanik dan kimiawi sekaligus.',
+      'Pintu gerbang utama sistem pencernaan manusia. Di dalam rongga mulut terjadi proses pencernaan mekanik (oleh gigi dan lidah) serta pencernaan kimiawi pertama (oleh saliva/air liur).',
     function:
-      'Makanan dikunyah menjadi bagian lebih kecil oleh gigi. Air liur membantu membasahi makanan dan mulai mencerna karbohidrat.',
-    foodState: 'Bolus (Gumpalan makanan lembut yang siap ditelan)',
+      'Mengunyah makanan menjadi partikel lebih kecil, membasahinya dengan saliva, dan memulai pemecahan karbohidrat menjadi molekul gula sederhana sebelum ditelan.',
+    foodState: 'Bolus (Gumpalan makanan halus & licin berbentuk bulat lonjong)',
     durationNote: '± 10 - 60 Detik',
-    keyEnzymes: ['Enzim Ptialin (Amilase Saliva)', 'Musin (Pelumas Saliva)'],
-    processDetails: [
-      'Gigi memotong dan melumat makanan secara mekanik.',
-      'Lidah mengaduk dan membantu pembentukan bolus.',
-      'Kelenjar ludah menyekresikan saliva untuk melarutkan makanan.',
-      'Enzim ptialin mengubah amilum (karbohidrat kompleks) menjadi maltosa.',
+    keyEnzymes: [
+      'Enzim Ptialin / Amilase Saliva (Memecah amilum jadi maltosa)',
+      'Musin / Mukus (Glikoprotein pelumas & pelindung mukosa)',
+      'Lisozim (Antibakteri alami dalam air liur)',
     ],
-    cameraPosition: [0, 3.8, 3.2],
-    cameraTarget: [0, 3.4, 0.2],
+    processDetails: [
+      'Pencernaan Mekanik: Gigi seri memotong, gigi taring merobek, dan gigi geraham menggilas makanan menjadi partikel halus.',
+      'Peran Lidah: Mengaduk makanan, merasakan cita rasa (papila gustatori), dan mendorong bolus ke faring.',
+      'Sekresi Kelenjar Saliva: Kelenjar parotis, submandibularis, dan sublingualis memproduksi ±1.5 liter saliva per hari.',
+      'Pencernaan Kimiawi: Ptialin bekerja optimal pada pH netral (6.8–7.0) mengubah karbohidrat kompleks menjadi maltosa.',
+    ],
+    cameraPosition: [0, 3.6, 2.8],
+    cameraTarget: [0, 3.35, 0.15],
     pathProgressRange: [0.0, 0.12],
-    color: '#f87171', // soft coral red
+    color: '#f87171',
     accentColor: '#fb7185',
-    organ3DPosition: [0, 3.4, 0.3],
+    organ3DPosition: [0, 3.4, 0.2],
   },
   {
     id: 'esophagus',
@@ -33,53 +37,56 @@ export const DIGESTIVE_STEPS: DigestiveStep[] = [
     name: 'Kerongkongan',
     latinName: 'Esofagus',
     description:
-      'Saluran berotot sepanjang ±25 cm yang menghubungkan rongga mulut dengan lambung.',
+      'Saluran tabung berotot sepanjang ±25 cm berdiameter ±2 cm yang menghubungkan rongga faring di leher dengan lambung di rongga dada-perut.',
     function:
-      'Makanan bergerak menuju lambung melalui gerakan otot bergelombang yang disebut gerakan peristaltik.',
-    foodState: 'Bolus yang didorong perlahan menuju sfingter kardia lambung',
+      'Menghantarkan bolus makanan menuju lambung melalui gerakan gelombang kontraksi otot polos sirkuler dan longitudinal yang disebut gerak peristaltik.',
+    foodState: 'Bolus yang didorong berirama menuju sfingter esofagus bawah',
     durationNote: '± 4 - 8 Detik',
-    keyEnzymes: ['Lendir / Mukus (Pelumas dinding esofagus)'],
-    processDetails: [
-      'Epiglotis menutup tenggorokan saat menelan agar makanan tidak masuk ke saluran pernapasan.',
-      'Otot sirkuler dan longitudinal berkontraksi secara ritmis (peristaltik).',
-      'Tidak terjadi pencernaan kimiawi baru di organ ini.',
-      'Sfingter esofagus bawah membuka untuk memasukkan bolus ke lambung.',
+    keyEnzymes: [
+      'Mukus / Lendir Esofagus (Pelumas dinding saluran tanpa enzim pencernaan baru)',
     ],
-    cameraPosition: [0, 2.0, 3.8],
-    cameraTarget: [0, 1.8, 0],
+    processDetails: [
+      'Refleks Menelan: Epiglotis otomatis menutup trakea (tenggorokan) sehingga makanan aman meluncur ke esofagus tanpa tersedak.',
+      'Gerakan Peristaltik: Otot sirkuler di belakang bolus berkontraksi menyempit, sementara otot di depan bolus berelaksasi melebar.',
+      'Sifat Saluran: Tidak ada penyerapan nutrisi atau sekresi enzim pemecah baru di organ ini.',
+      'Sfingter Kardia / LES: Cincin otot di ujung esofagus membuka sejenak untuk meloloskan bolus masuk ke lambung, lalu menutup rapat mencegah asam lambung naik (refluks).',
+    ],
+    cameraPosition: [0, 2.0, 3.2],
+    cameraTarget: [0, 1.85, 0.0],
     pathProgressRange: [0.12, 0.28],
-    color: '#fb923c', // soft orange
+    color: '#fb923c',
     accentColor: '#fdba74',
-    organ3DPosition: [0, 1.8, 0],
+    organ3DPosition: [0, 1.85, 0],
   },
   {
     id: 'stomach',
     index: 2,
     name: 'Lambung',
-    latinName: 'Ventrikulus',
+    latinName: 'Ventrikulus / Gaster',
     description:
-      'Organ berbentuk kantung berotot tebal di sisi kiri rongga perut tempat pencernaan kimiawi intensif berlangsung.',
+      'Organ berongga berbentuk huruf J elastis yang terletak di kuadran kiri atas abdomen. Memiliki dinding berotot 3 lapis (longitudinal, sirkuler, oblik) dengan kapasitas 1.5–2 liter.',
     function:
-      'Makanan bercampur dengan asam lambung dan enzim. Gerakan otot lambung membantu menghancurkan dan mencampur makanan.',
-    foodState: 'Kimus / Chyme (Cairan kental seperti bubur bersifat asam)',
+      'Menampung makanan, mencampur bolus dengan getah lambung (asam klorida & enzim) melalui kontraksi mekanik kuat, dan mengubahnya menjadi cairan kental asam (kimus/chyme).',
+    foodState: 'Kimus / Chyme (Bubur kental semi-cair bersifat sangat asam, pH 1.5 - 2.0)',
     durationNote: '± 2 - 4 Jam',
     keyEnzymes: [
-      'Asam Klorida (HCl - Membunuh kuman & mengaktifkan enzim)',
-      'Pepsin (Memecah protein menjadi pepton)',
-      'Renin (Menggumpalkan protein susu kasein)',
+      'Asam Klorida (HCl - pH 1.5-2: membunuh patogen & aktivasi pepsinogen)',
+      'Pepsin (Memecah protein kompleks jadi peptida/pepton)',
+      'Renin (Menggumpalkan kasein susu pada bayi)',
+      'Lipase Gastrik (Memecah trigliserida rantai pendek dalam jumlah kecil)',
     ],
     processDetails: [
-      'Dinding lambung berkontraksi kuat mengaduk makanan secara mekanik.',
-      'HCl menciptakan kondisi asam ekstrem (pH 1.5 - 2.0).',
-      'Pepsin memecah rantai ikatan protein menjadi peptida lebih pendek.',
-      'Lapisan mukus tebal melindungi dinding lambung dari asam korosif.',
+      'Pencernaan Mekanik (Churning): 3 lapisan otot dinding lambung memeras, mengocok, dan menggiling bolus menjadi partikel mikro.',
+      'Aktivasi Kimiawi: Sel parietal menyekresi HCl yang mengubah pepsinogen inaktif menjadi enzim pepsin aktif.',
+      'Perlindungan Mukosa: Sel goblet menghasilkan lapisan mukus bikarbonat tebal guna melindungi dinding lambung dari korosi asam sendiri.',
+      'Pengeluaran Terkontrol: Sfingter pilorus membuka bertahap menyemprotkan kimus per mililiter ke dalam duodenum usus halus.',
     ],
-    cameraPosition: [-0.6, 0.2, 3.0],
-    cameraTarget: [-0.3, 0.1, 0.1],
+    cameraPosition: [-0.6, 0.15, 2.8],
+    cameraTarget: [-0.28, 0.05, 0.12],
     pathProgressRange: [0.28, 0.48],
-    color: '#e11d48', // ruby rose
+    color: '#e11d48',
     accentColor: '#f43f5e',
-    organ3DPosition: [-0.35, 0.1, 0.15],
+    organ3DPosition: [-0.3, 0.05, 0.12],
   },
   {
     id: 'smallIntestine',
@@ -87,80 +94,86 @@ export const DIGESTIVE_STEPS: DigestiveStep[] = [
     name: 'Usus Halus',
     latinName: 'Intestinum Tenue',
     description:
-      'Saluran terpanjang (±6 meter) yang terdiri dari Duodenum (12 jari), Jejunum (kosong), dan Ileum (penyerapan).',
+      'Saluran pencernaan terpanjang (±6 meter) dengan lipatan jonjot usus (vili & mikrovili) yang memperluas area penyerapan hingga ±250 m² (setara lapangan tenis). Terdiri dari Duodenum (12 jari), Jejunum (kosong), dan Ileum (penyerapan).',
     function:
-      'Sebagian besar proses pencernaan kimiawi dan penyerapan nutrisi (karbohidrat, protein, lemak, vitamin) terjadi di usus halus.',
-    foodState: 'Cairan nutrisi terlarut yang diserap kapiler dan pembuluh kil',
+      'Tempat terjadinya puncak pencernaan kimiawi serta penyerapan lebih dari 90% seluruh nutrisi (glukosa, asam amino, asam lemak, vitamin, dan mineral) ke pembuluh darah dan limfa.',
+    foodState: 'Cairan sari makanan terlarut; makronutrien dipecah jadi monomer yang siap diserap kapiler',
     durationNote: '± 3 - 5 Jam',
     keyEnzymes: [
-      'Cairan Empedu (Emulsifikasi lemak dari hati)',
-      'Amilase, Lipase, Tripsin (Dari pankreas)',
-      'Maltase, Sukrase, Laktase, Peptidase (Dari dinding usus)',
+      'Getah Empedu dari Hati: Mengemulsi lemak menjadi tetesan kecil',
+      'Tripsin, Kimotripsin, Karboksipeptidase (Pankreas): Memecah peptida jadi asam amino',
+      'Amilase Pankreas: Memecah sisa amilum jadi maltosa',
+      'Lipase Pankreas: Memecah lemak jadi asam lemak & gliserol',
+      'Maltase, Sukrase, Laktase (Dinding Usus): Memecah disakarida jadi monosakarida',
+      'Peptidase & Enterokinase (Dinding Usus): Pemecahan protein tahap akhir',
     ],
     processDetails: [
-      'Duodenum menetralkan asam kimus dengan bikarbonat dan getah empedu.',
-      'Enzim pankreas dan usus memecah nutrisi menjadi molekul paling sederhana.',
-      'Mikrovili (jonjot usus) memperluas area penyerapan hingga seukuran lapangan tenis.',
-      'Nutrisi diserap ke aliran darah untuk diedarkan ke seluruh tubuh.',
+      'Netralisasi Asam: Duodenum menerima bikarbonat dari pankreas untuk menaikkan pH kimus dari asam (2) menjadi basa ramah enzim (7.5-8.0).',
+      'Pencernaan Komprehensif: Emulsi empedu + enzim pankreas + enzim usus menuntaskan pemecahan karbohidrat, protein, dan lemak.',
+      'Penyerapan Vili: Glukosa, asam amino, vitamin B & C diserap pembuluh darah kapiler menuju vena porta hepatika ke hati.',
+      'Penyerapan Lemak: Asam lemak & gliserol diserap oleh pembuluh kil (lakteal/limfa) bersama vitamin larut lemak (A, D, E, K).',
     ],
-    cameraPosition: [0, -1.2, 3.4],
-    cameraTarget: [0, -1.2, 0.2],
+    cameraPosition: [0, -1.15, 3.2],
+    cameraTarget: [0, -1.15, 0.18],
     pathProgressRange: [0.48, 0.74],
-    color: '#f59e0b', // amber gold
+    color: '#f59e0b',
     accentColor: '#fbbf24',
-    organ3DPosition: [0, -1.2, 0.2],
+    organ3DPosition: [0, -1.15, 0.18],
   },
   {
     id: 'largeIntestine',
     index: 4,
     name: 'Usus Besar',
-    latinName: 'Kolon / Intestinum Crassum',
+    latinName: 'Intestinum Crassum / Kolon',
     description:
-      'Saluran berdiameter lebih lebar berbentuk bingkai (kolon asenden, transversum, desenden, dan sigmoid).',
+      'Saluran berdiameter ±6.5 cm sepanjang ±1.5 meter yang membingkai rongga perut, terdiri dari Sekum (+ Apendiks), Kolon Asenden (naik), Kolon Transversum (mendatar), Kolon Desenden (turun), dan Kolon Sigmoid (huruf S).',
     function:
-      'Air dan sebagian mineral diserap kembali ke tubuh. Sisa makanan dibusukkan oleh bakteri baik dan mulai membentuk feses.',
-    foodState: 'Massa feses semi-padat yang telah kehilangan sebagian besar air',
+      'Menyerap kembali kelebihan air (±1.5-2 liter/hari) dan elektrolit dari sisa pencernaan, membusukkan ampas makanan dengan bantuan bakteri komensal, serta membentuk massa feses padat.',
+    foodState: 'Massa feses semi-padat yang mengalami pemadatan & fermentasi serat',
     durationNote: '± 10 - 24 Jam',
     keyEnzymes: [
-      'Bakteri Escherichia coli (Pembusukan & sintesis Vitamin K/B12)',
-      'Mukus (Pelumas dinding kolon)',
+      'Bakteri Probiotik / Escherichia coli (Fermentasi sisa serat & sintesis Vitamin K dan Vitamin B12)',
+      'Mukus Kolon (Pelumas dinding usus untuk melancarkan lintasan feses padat)',
     ],
     processDetails: [
-      'Menyerap kembali kelebihan air dan elektrolit dari sisa pencernaan.',
-      'Bakteri komensal memfermentasi sisa serat dan menghasilkan vitamin esensial.',
-      'Gerakan massa mendorong sisa makanan secara berkala ke arah rektum.',
-      'Feses dipadatkan menjadi bentuk padat teratur.',
+      'Reabsorpsi Air & Garam: Air dan natrium diserap kembali secara efisien ke pembuluh darah untuk menjaga hidrasi tubuh.',
+      'Aktivitas Mikrobioma: Bakteri usus memfermentasi sisa serat tak tercerna menghasilkan gas dan asam lemak rantai pendek (SCFA).',
+      'Pembentukan Feses: Ampas makanan yang terdiri dari serat mati, sel epitel rontok, bakteri, dan pigmen empedu (sterkobilin penentu warna cokelat) dipadatkan.',
+      'Gerakan Massa (Mass Movement): Kontraksi peristaltik kuat 2-3 kali sehari mendorong feses dari kolon transversum menuju sigmoid dan rektum.',
     ],
-    cameraPosition: [0, -1.0, 3.8],
-    cameraTarget: [0, -1.0, 0.1],
+    cameraPosition: [0, -1.05, 3.5],
+    cameraTarget: [0, -1.05, 0.1],
     pathProgressRange: [0.74, 0.92],
-    color: '#84cc16', // lime olive
+    color: '#84cc16',
     accentColor: '#a3e635',
-    organ3DPosition: [0, -1.0, 0.05],
+    organ3DPosition: [0, -1.05, 0.08],
   },
   {
     id: 'rectum',
     index: 5,
     name: 'Rektum & Anus',
-    latinName: 'Rektum & Anus',
+    latinName: 'Rektum & Kanalis Analis',
     description:
-      'Bagian akhir dari saluran pencernaan yang berfungsi sebagai tempat penampungan sementara dan saluran pengeluaran sisa makanan.',
+      'Segmen terminal saluran pencernaan sepanjang ±12-15 cm yang berakhir di lubang luar anus. Memiliki ampula rektum sebagai kantung penampung dan dua cincin sfingter pengatur pengeluaran.',
     function:
-      'Feses disimpan sementara di rektum sampai timbul rangsangan untuk dikeluarkan (defekasi) melalui anus.',
-    foodState: 'Feses yang siap dikeluarkan dari tubuh',
-    durationNote: 'Penyimpanan berkala',
-    keyEnzymes: ['Tidak ada enzim pencernaan'],
-    processDetails: [
-      'Dinding rektum meregang saat terisi, memicu sinyal saraf ke otak (refleks defekasi).',
-      'Sfingter internal (involunter) dan sfingter eksternal (volunter) mengatur penahanan dan pelepasan feses.',
-      'Otot panggul bekerja sama mendorong feses keluar tubuh secara higienis.',
+      'Menampung feses sementara waktu hingga volume mencukupi untuk memicu refleks buang air besar (defekasi), kemudian mengeluarkannya secara teratur dan higienis.',
+    foodState: 'Feses padat teratur yang siap dikeluarkan dari tubuh melalui lubang anus',
+    durationNote: 'Penyimpanan periodik',
+    keyEnzymes: [
+      'Tidak ada enzim pencernaan (Murni fungsi ekskresi mekanik)',
     ],
-    cameraPosition: [0, -2.6, 2.8],
-    cameraTarget: [0, -2.6, 0],
+    processDetails: [
+      'Peregangan Ampula: Ketika dinding ampula rektum terisi feses, reseptor regang mengirim impuls ke medula spinalis.',
+      'Refleks Defekasi: Otot dinding rektum berkontraksi, sfingter ani internus (otot polos involunter) otomatis berelaksasi terbuka.',
+      'Kontrol Sadar: Sfingter ani eksternus (otot lurik volunter) dapat ditahan secara sadar oleh otak sampai waktu yang tepat tiba.',
+      'Pengeluaran: Tekanan intra-abdomen dibantu diafragma dan otot perut (manuver Valsalva) mendorong feses keluar secara tuntas.',
+    ],
+    cameraPosition: [0, -2.65, 2.6],
+    cameraTarget: [0, -2.75, 0.0],
     pathProgressRange: [0.92, 1.0],
-    color: '#06b6d4', // cyan
+    color: '#06b6d4',
     accentColor: '#22d3ee',
-    organ3DPosition: [0, -2.6, 0.05],
+    organ3DPosition: [0, -2.75, 0.0],
   },
 ];
 
@@ -169,107 +182,107 @@ export const ACCESSORY_ORGANS: AccessoryOrganInfo[] = [
     id: 'liver',
     name: 'Hati',
     latinName: 'Hepar',
-    role: 'Organ Aksesori Utama',
+    role: 'Kelenjar Metabolisme Utama',
     description:
-      'Kelenjar terbesar dalam tubuh manusia yang terletak di bagian kanan atas rongga perut di bawah diafragma.',
+      'Kelenjar terbesar dalam tubuh manusia (±1.5 kg) yang menempati kuadran kanan atas abdomen di bawah diafragma. Terdiri dari lobus kanan besar dan lobus kiri.',
     function:
-      'Memproduksi cairan empedu untuk mencerna lemak, menyaring racun dari darah, dan menyimpan glukosa dalam bentuk glikogen.',
-    secretion: 'Cairan Empedu (Bile Salt) ± 600 - 1000 mL per hari',
-    color: '#b91c1c', // deep rich red-brown
-    cameraPosition: [1.2, 0.6, 2.8],
-    cameraTarget: [0.65, 0.45, 0.15],
-    organ3DPosition: [0.65, 0.45, 0.2],
+      'Memproduksi getah empedu secara terus-menerus untuk mencerna lemak, memproses dan menyimpan nutrisi dari vena porta hepatika, menetralkan racun (detoksifikasi), serta menyimpan glikogen dan vitamin.',
+    secretion: 'Getah Empedu (Bile Salt) ± 800 - 1000 mL / hari untuk emulsifikasi lemak',
+    color: '#b91c1c',
+    cameraPosition: [1.1, 0.55, 2.6],
+    cameraTarget: [0.55, 0.42, 0.15],
+    organ3DPosition: [0.55, 0.42, 0.15],
   },
   {
     id: 'gallbladder',
     name: 'Kantong Empedu',
     latinName: 'Vesica Fellea',
-    role: 'Penyimpan Getah Empedu',
+    role: 'Penyimpan & Pemekat Getah Empedu',
     description:
-      'Organ kecil berbentuk buah pir yang menempel di bawah lobus kanan hati.',
+      'Organ kecil berongga berbentuk buah pir sepanjang ±7-10 cm yang melekat erat di lekukan permukaan bawah lobus kanan hati.',
     function:
-      'Menampung, memekatkan, dan melepaskan cairan empedu ke duodenum saat makanan berlemak masuk ke usus halus.',
-    secretion: 'Getah empedu terkonsentrasi yang dialirkan melalui duktus koledokus',
-    color: '#10b981', // emerald green
-    cameraPosition: [0.9, 0.1, 2.5],
-    cameraTarget: [0.4, 0.08, 0.3],
-    organ3DPosition: [0.42, 0.08, 0.32],
+      'Menampung getah empedu dari hati, memekatkannya hingga 5-10 kali lipat dengan menyerap air, dan mengontraksikan diri melepaskan empedu melalui duktus koledokus ke duodenum saat makanan berlemak tiba.',
+    secretion: 'Getah empedu terkonsentrasi yang kaya garam empedu, bilirubin, dan kolesterol',
+    color: '#10b981',
+    cameraPosition: [0.85, 0.1, 2.3],
+    cameraTarget: [0.38, 0.1, 0.28],
+    organ3DPosition: [0.38, 0.1, 0.28],
   },
   {
     id: 'pancreas',
     name: 'Pankreas',
     latinName: 'Pancreas',
-    role: 'Kelenjar Eksokrin & Endokrin',
+    role: 'Kelenjar Eksokrin & Endokrin Kunci',
     description:
-      'Kelenjar memanjang berbentuk daun pipih yang terletak di belakang lambung dan berdekatan dengan lengkungan duodenum.',
+      'Kelenjar memanjang berbentuk pipih (seperti lidah/daun) sepanjang ±15 cm yang terletak melintang di belakang lambung dengan kepala dilingkari lengkungan C duodenum.',
     function:
-      'Menghasilkan enzim pencernaan kunci (amilase, tripsin, lipase) dan natrium bikarbonat untuk menetralkan asam lambung di usus.',
-    secretion: 'Getah Pankreas (Bikarbonat + Enzim Lipase, Amilase, Protease)',
-    color: '#f59e0b', // amber yellow
-    cameraPosition: [-0.2, -0.2, 2.8],
-    cameraTarget: [-0.05, -0.25, -0.05],
-    organ3DPosition: [-0.05, -0.25, -0.05],
+      'Fungsi Eksokrin: Menghasilkan getah pankreas kaya natrium bikarbonat (menetralkan asam lambung) dan enzim pencernaan utama (amilase, tripsin, lipase). Fungsi Endokrin: Memproduksi hormon insulin dan glukagon pengatur gula darah.',
+    secretion: 'Getah Pankreas (Bikarbonat cair + Amilase, Tripsinogen, Lipase, Nuklease)',
+    color: '#f59e0b',
+    cameraPosition: [-0.15, -0.2, 2.5],
+    cameraTarget: [-0.05, -0.25, 0.02],
+    organ3DPosition: [-0.05, -0.25, 0.02],
   },
 ];
 
 // Continuous 3D Catmull-Rom Curve control points for the digestive journey
-// Smooth progression from mouth down to rectum
+// Aligned with the physical 3D procedural geometries of the digestive tract
 export const DIGESTIVE_PATH_POINTS: [number, number, number][] = [
   // 1. Mouth (Cavum Oris) [Progress ~ 0.00 to 0.12]
-  [0.0, 3.45, 0.42], // Front of mouth
-  [0.0, 3.38, 0.25], // Center of mouth
-  [0.0, 3.25, 0.05], // Back of mouth / Pharynx
-  [0.0, 3.0, -0.05], // Epiglottis junction
+  [0.0, 3.42, 0.38], // Front lips
+  [0.0, 3.36, 0.22], // Center tongue / oral cavity
+  [0.0, 3.22, 0.06], // Back pharynx
+  [0.0, 2.95, -0.04], // Epiglottis junction
 
   // 2. Esophagus (Esofagus) [Progress ~ 0.12 to 0.28]
-  [0.0, 2.65, -0.05],
-  [0.02, 2.2, -0.05],
-  [0.0, 1.7, -0.04],
-  [-0.05, 1.2, -0.02],
-  [-0.15, 0.75, 0.05], // Approaching cardiac sphincter
+  [0.0, 2.6, -0.04],
+  [0.01, 2.15, -0.04],
+  [0.0, 1.68, -0.03],
+  [-0.04, 1.2, -0.01],
+  [-0.14, 0.72, 0.06], // Cardiac sphincter inlet
 
   // 3. Stomach (Ventrikulus) - Curves along greater curvature [Progress ~ 0.28 to 0.48]
-  [-0.32, 0.55, 0.12], // Fundus
-  [-0.58, 0.35, 0.18], // Body left curve
-  [-0.65, 0.05, 0.22], // Greater curvature apex
-  [-0.52, -0.2, 0.2], // Antrum
-  [-0.25, -0.32, 0.15], // Pyloric canal
+  [-0.28, 0.52, 0.12], // Upper Fundus
+  [-0.52, 0.32, 0.18], // Body left curve
+  [-0.6, 0.04, 0.22], // Greater curvature apex
+  [-0.48, -0.22, 0.18], // Antrum
+  [-0.24, -0.32, 0.14], // Pyloric canal
   [-0.05, -0.35, 0.1], // Pyloric sphincter
 
   // 4. Small Intestine (Intestinum Tenue) - Loops inside abdomen [Progress ~ 0.48 to 0.74]
-  [0.15, -0.38, 0.12], // Duodenum C-loop start
-  [0.32, -0.55, 0.15], // Duodenum descending
-  [0.2, -0.75, 0.18], // Duodenum horizontal
-  [-0.1, -0.78, 0.2], // Duodenojejunal flexure
-  [-0.38, -0.95, 0.26], // Jejunum loop 1
-  [-0.15, -1.15, 0.28], // Jejunum loop 2
-  [0.25, -1.05, 0.28], // Jejunum loop 3
-  [0.38, -1.3, 0.25], // Ileum loop 1
-  [0.05, -1.45, 0.28], // Ileum loop 2
-  [-0.28, -1.55, 0.25], // Ileum loop 3
-  [0.12, -1.72, 0.24], // Ileum loop 4
-  [0.55, -1.82, 0.2], // Ileocecal junction (approaching cecum on right)
+  [0.16, -0.37, 0.12], // Duodenum C-loop top
+  [0.34, -0.52, 0.14], // Duodenum right descending
+  [0.22, -0.72, 0.16], // Duodenum bottom horizontal
+  [-0.1, -0.76, 0.18], // Duodenojejunal flexure
+  [-0.36, -0.92, 0.24], // Jejunum loop 1
+  [-0.14, -1.12, 0.26], // Jejunum loop 2
+  [0.24, -1.02, 0.26], // Jejunum loop 3
+  [0.38, -1.26, 0.23], // Ileum loop 1
+  [0.06, -1.42, 0.26], // Ileum loop 2
+  [-0.26, -1.52, 0.23], // Ileum loop 3
+  [0.1, -1.68, 0.22], // Ileum loop 4
+  [0.54, -1.8, 0.18], // Ileocecal junction (enters cecum)
 
   // 5. Large Intestine (Kolon) - Frames the periphery [Progress ~ 0.74 to 0.92]
-  [0.72, -1.88, 0.15], // Cecum
-  [0.78, -1.5, 0.12], // Ascending colon lower
-  [0.8, -1.0, 0.08], // Ascending colon middle
-  [0.75, -0.55, 0.08], // Hepatic flexure (right colic flexure)
-  [0.4, -0.52, 0.12], // Transverse colon right
-  [0.0, -0.58, 0.15], // Transverse colon center dip
-  [-0.45, -0.52, 0.12], // Transverse colon left
-  [-0.78, -0.55, 0.08], // Splenic flexure (left colic flexure)
-  [-0.8, -1.0, 0.08], // Descending colon middle
-  [-0.75, -1.5, 0.1], // Descending colon lower
-  [-0.65, -1.85, 0.12], // Iliac crest
-  [-0.4, -2.05, 0.08], // Sigmoid loop start
-  [-0.15, -2.18, 0.05], // Sigmoid loop apex
-  [0.0, -2.35, 0.02], // Rectosigmoid junction
+  [0.72, -1.86, 0.14], // Cecum
+  [0.78, -1.46, 0.11], // Ascending colon lower
+  [0.8, -0.96, 0.08], // Ascending colon middle
+  [0.74, -0.54, 0.08], // Hepatic flexure (right colic angle)
+  [0.38, -0.5, 0.12], // Transverse colon right
+  [0.0, -0.56, 0.14], // Transverse colon center
+  [-0.42, -0.5, 0.12], // Transverse colon left
+  [-0.75, -0.54, 0.08], // Splenic flexure (left colic angle)
+  [-0.78, -0.96, 0.08], // Descending colon middle
+  [-0.74, -1.46, 0.1], // Descending colon lower
+  [-0.64, -1.82, 0.11], // Iliac crest
+  [-0.38, -2.04, 0.07], // Sigmoid loop start
+  [-0.14, -2.16, 0.04], // Sigmoid loop apex
+  [0.0, -2.32, 0.02], // Rectosigmoid junction
 
   // 6. Rectum & Anus [Progress ~ 0.92 to 1.00]
-  [0.0, -2.55, -0.02], // Upper rectum
-  [0.0, -2.85, -0.02], // Rectal ampulla
-  [0.0, -3.15, -0.01], // Anal canal / exit
+  [0.0, -2.52, -0.01], // Upper rectum
+  [0.0, -2.78, -0.02], // Rectal ampulla
+  [0.0, -3.12, 0.0], // Anal canal / exit
 ];
 
 export const digestiveCurve = new THREE.CatmullRomCurve3(
@@ -291,5 +304,5 @@ export function getStageFromProgress(progress: number): DigestiveStageId {
 
 export function getProgressFromStage(stageId: DigestiveStageId): number {
   const step = DIGESTIVE_STEPS.find((s) => s.id === stageId);
-  return step ? step.pathProgressRange[0] + 0.01 : 0;
+  return step ? step.pathProgressRange[0] + 0.005 : 0;
 }
