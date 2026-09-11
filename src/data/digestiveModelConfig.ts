@@ -27,8 +27,8 @@ export const SHOW_FOOD_PATH = false;
 // Toggle to visualize organ bounding boxes for debugging camera focus and mapping
 export const SHOW_ORGAN_BOUNDS = false;
 
-// Toggle semi-transparent anatomical body silhouette
-export const SHOW_BODY_OUTLINE = true;
+// Toggle semi-transparent anatomical body silhouette (disabled by default when real GLB is active)
+export const SHOW_BODY_OUTLINE = false;
 
 // Development flag: logs node hierarchy of loaded GLB model
-export const DEBUG_PRINT_GLB_HIERARCHY = process.env.NODE_ENV !== 'production';
+export const DEBUG_PRINT_GLB_HIERARCHY = import.meta.env.DEV;

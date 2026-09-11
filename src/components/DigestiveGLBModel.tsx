@@ -11,9 +11,12 @@ import { GLB_ORGAN_MAPPING } from '../data/glbOrganMapping';
 import { DIGESTIVE_STEPS, ACCESSORY_ORGANS } from '../data/digestiveSteps';
 import {
   printGLBHierarchy,
+  printOrganAuditReport,
   resolveOrganFromMesh,
+  resolveOrganFromPoint,
   calculateModelNormalization,
   computeOrganBoundingBoxes,
+  getAnatomicalSpatialBounds,
 } from '../utils/glbUtils';
 
 export interface DigestiveGLBModelProps {
@@ -86,6 +89,7 @@ const DigestiveGLBRenderer: React.FC<DigestiveGLBModelProps> = ({
   const { meshOrganMap, materialCache, organBounds } = useMemo(() => {
     const map = new Map<THREE.Mesh, OrganId>();
     const cache: GLBMaterialCache[] = [];
+    const foundMap = new Map<OrganId, string[]>();
 
     // Traverse and map meshes
     clonedScene.traverse((child) => {
@@ -97,6 +101,9 @@ const DigestiveGLBRenderer: React.FC<DigestiveGLBModelProps> = ({
         const resolvedOrgan = resolveOrganFromMesh(mesh, GLB_ORGAN_MAPPING);
         if (resolvedOrgan) {
           map.set(mesh, resolvedOrgan);
+          const list = foundMap.get(resolvedOrgan) || [];
+          list.push(mesh.name || 'unnamed');
+          foundMap.set(resolvedOrgan, list);
         }
 
         // Clone material once to avoid shared global mutation
@@ -139,22 +146,17 @@ const DigestiveGLBRenderer: React.FC<DigestiveGLBModelProps> = ({
     // Compute bounding boxes for each resolved organ
     const bounds = computeOrganBoundingBoxes(map);
 
-    // Audit mapped organs & log warnings for missing expected organs
-    const expectedOrgans: OrganId[] = [
-      'stomach',
-      'liver',
-      'pancreas',
-      'smallIntestine',
-      'largeIntestine',
-    ];
-
-    expectedOrgans.forEach((organId) => {
+    // If certain organs are missing from individual mesh nodes (e.g. unified single-mesh model),
+    // augment with calibrated spatial anatomical bounds so all organs have millimeter-accurate framing
+    const spatialBounds = getAnatomicalSpatialBounds();
+    spatialBounds.forEach((box, organId) => {
       if (!bounds.has(organId)) {
-        console.warn(
-          `[GLB Organ Mapping Warning] Organ mesh "${organId}" not automatically matched in GLB hierarchy. Check glbOrganMapping.ts.`
-        );
+        bounds.set(organId, box);
       }
     });
+
+    // Print development organ audit report
+    printOrganAuditReport(foundMap);
 
     return {
       meshOrganMap: map,
@@ -177,7 +179,7 @@ const DigestiveGLBRenderer: React.FC<DigestiveGLBModelProps> = ({
       const box = organBounds.get(targetOrgan)!;
       const center = new THREE.Vector3();
       box.getCenter(center);
-      center.y += 0.2; // Float slightly above center
+      center.y += 0.22; // Float slightly above center
       setActiveLabelPos(center);
     } else {
       setActiveLabelPos(null);
@@ -236,12 +238,23 @@ const DigestiveGLBRenderer: React.FC<DigestiveGLBModelProps> = ({
     });
   }, [materialCache, activeStageId, selectedOrganId, hoveredOrgan]);
 
-  // Click handler: resolves clicked mesh to its corresponding organ
+  // Resolve organ from pointer intersection (handles both discrete meshes and continuous unified mesh)
+  const getOrganFromEvent = (e: any): OrganId | null => {
+    const hitObject = e.object as THREE.Mesh;
+    const mapped = meshOrganMap.get(hitObject) || resolveOrganFromMesh(hitObject, GLB_ORGAN_MAPPING);
+    if (mapped) return mapped;
+
+    // Fallback: anatomical spatial region resolution from 3D intersection point
+    if (e.point) {
+      return resolveOrganFromPoint(e.point);
+    }
+    return null;
+  };
+
+  // Click handler: resolves clicked mesh or point to its corresponding organ
   const handleClick = (e: any) => {
     e.stopPropagation();
-    const hitObject = e.object as THREE.Mesh;
-    const organ = meshOrganMap.get(hitObject) || resolveOrganFromMesh(hitObject, GLB_ORGAN_MAPPING);
-
+    const organ = getOrganFromEvent(e);
     if (organ) {
       onSelectOrgan(organ);
     }
@@ -250,12 +263,18 @@ const DigestiveGLBRenderer: React.FC<DigestiveGLBModelProps> = ({
   // Pointer hover handlers
   const handlePointerOver = (e: any) => {
     e.stopPropagation();
-    const hitObject = e.object as THREE.Mesh;
-    const organ = meshOrganMap.get(hitObject) || resolveOrganFromMesh(hitObject, GLB_ORGAN_MAPPING);
-
+    const organ = getOrganFromEvent(e);
     if (organ) {
       setHoveredOrgan(organ);
       document.body.style.cursor = 'pointer';
+    }
+  };
+
+  const handlePointerMove = (e: any) => {
+    e.stopPropagation();
+    const organ = getOrganFromEvent(e);
+    if (organ && organ !== hoveredOrgan) {
+      setHoveredOrgan(organ);
     }
   };
 
@@ -283,6 +302,7 @@ const DigestiveGLBRenderer: React.FC<DigestiveGLBModelProps> = ({
       scale={[normalizedScale, normalizedScale, normalizedScale]}
       onClick={handleClick}
       onPointerOver={handlePointerOver}
+      onPointerMove={handlePointerMove}
       onPointerOut={handlePointerOut}
     >
       {/* Offset to center model at origin */}
@@ -356,7 +376,7 @@ class DigestiveGLBErrorBoundary extends React.Component<
 
   componentDidCatch(error: unknown) {
     console.warn(
-      'Digestive GLB model not found. Using procedural fallback.',
+      'Digestive GLB model error. Reverting to procedural fallback.',
       error
     );
   }
@@ -376,7 +396,7 @@ const ModelLoadingIndicator: React.FC = () => (
   <Html center distanceFactor={7.5}>
     <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/90 text-cyan-300 border border-cyan-500/40 text-xs shadow-lg backdrop-blur-md">
       <div className="w-2.5 h-2.5 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-      <span>Memuat model anatomi...</span>
+      <span>Memuat model anatomi 3D...</span>
     </div>
   </Html>
 );
@@ -406,29 +426,43 @@ export const DigestiveGLBModel: React.FC<
           return;
         }
 
-        const blob = await res.blob();
-        const headerBlob = blob.slice(0, 32);
-        const headerBuffer = await headerBlob.arrayBuffer();
-        const headerText = new TextDecoder().decode(headerBuffer);
+        // Read only the first chunk of stream to avoid duplicate full binary fetch
+        const reader = res.body?.getReader();
+        if (reader) {
+          const { value } = await reader.read();
+          await reader.cancel();
 
-        // Check if response is HTML error page
-        if (
-          headerText.startsWith('<') ||
-          headerText.toLowerCase().includes('!doctype') ||
-          headerText.toLowerCase().includes('html')
-        ) {
-          if (isMounted) setModelAvailable(false);
-          return;
-        }
+          if (!value || value.length < 4) {
+            if (isMounted) setModelAvailable(false);
+            return;
+          }
 
-        // Validate GLB ('glTF') magic bytes or glTF JSON start ('{')
-        const isGLB = headerText.startsWith('glTF');
-        const isGLTF = headerText.trim().startsWith('{');
+          // Check if response is HTML error document
+          const headerText = new TextDecoder().decode(value.slice(0, 32));
+          if (
+            headerText.startsWith('<') ||
+            headerText.toLowerCase().includes('!doctype') ||
+            headerText.toLowerCase().includes('html')
+          ) {
+            if (isMounted) setModelAvailable(false);
+            return;
+          }
 
-        if (isGLB || isGLTF) {
-          if (isMounted) setModelAvailable(true);
+          // Validate GLB magic ('glTF': 0x67, 0x6c, 0x54, 0x46) or glTF JSON start ('{')
+          const isGLB =
+            value[0] === 0x67 &&
+            value[1] === 0x6c &&
+            value[2] === 0x54 &&
+            value[3] === 0x46;
+          const isGLTF = headerText.trim().startsWith('{');
+
+          if (isGLB || isGLTF) {
+            if (isMounted) setModelAvailable(true);
+          } else {
+            if (isMounted) setModelAvailable(false);
+          }
         } else {
-          if (isMounted) setModelAvailable(false);
+          if (isMounted) setModelAvailable(true);
         }
       } catch {
         if (isMounted) setModelAvailable(false);

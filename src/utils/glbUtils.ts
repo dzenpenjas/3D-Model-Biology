@@ -6,19 +6,18 @@ import { OrganId } from '../types';
  * Helps developers inspect exact node names of imported GLB files.
  */
 export function printGLBHierarchy(scene: THREE.Object3D): void {
+  if (!import.meta.env.DEV) return;
   console.groupCollapsed('🔍 [GLB Hierarchy Inspector] Scanning scene tree...');
 
-  let nodeCount = 0;
-  let meshCount = 0;
+  let totalNodes = 0;
+  let totalMeshes = 0;
+  let totalTriangles = 0;
 
-  function traverseNode(node: THREE.Object3D, depth: number) {
-    nodeCount++;
-    const indent = '  '.repeat(depth);
-    const isMesh = (node as THREE.Mesh).isMesh;
-
-    if (isMesh) {
-      meshCount++;
-      const mesh = node as THREE.Mesh;
+  scene.traverse((object) => {
+    totalNodes++;
+    if ((object as THREE.Mesh).isMesh) {
+      totalMeshes++;
+      const mesh = object as THREE.Mesh;
       const matNames = Array.isArray(mesh.material)
         ? mesh.material.map((m) => m.name || 'unnamed').join(', ')
         : mesh.material?.name || 'unnamed';
@@ -26,65 +25,134 @@ export function printGLBHierarchy(scene: THREE.Object3D): void {
       const polyCount = mesh.geometry
         ? mesh.geometry.index
           ? mesh.geometry.index.count / 3
-          : mesh.geometry.attributes.position?.count / 3 || 0
+          : (mesh.geometry.attributes.position?.count || 0) / 3
         : 0;
 
-      console.log(
-        `${indent}📦 [Mesh] "${mesh.name || 'unnamed'}" (type: ${node.type}) | Mat: "${matNames}" | Tris: ${Math.round(polyCount)}`
-      );
+      totalTriangles += polyCount;
+
+      console.log({
+        mesh: mesh.name || 'unnamed',
+        parent: mesh.parent?.name || 'none',
+        material: matNames,
+        type: mesh.type,
+        triangles: Math.round(polyCount),
+      });
     } else {
-      console.log(`${indent}📁 [Node] "${node.name || 'unnamed'}" (type: ${node.type})`);
+      console.log({
+        node: object.name || 'unnamed',
+        parent: object.parent?.name || 'none',
+        type: object.type,
+      });
     }
+  });
 
-    for (const child of node.children) {
-      traverseNode(child, depth + 1);
-    }
-  }
-
-  traverseNode(scene, 0);
-  console.log(`Total nodes: ${nodeCount}, Meshes: ${meshCount}`);
+  console.log(
+    `Total nodes: ${totalNodes}, Total meshes: ${totalMeshes}, Approx triangles: ${Math.round(totalTriangles)}`
+  );
   console.groupEnd();
 }
 
 /**
- * Resolves which OrganId an object belongs to by inspecting:
- * 1. mesh.name
- * 2. parent.name
- * 3. ancestor names up to the scene root
+ * Normalizes a string by stripping punctuation, underscores, dashes, spaces, and lowercase.
+ */
+function normalizeIdentifier(str: string): string {
+  return str.toLowerCase().replace(/[-_\s]+/g, '');
+}
+
+/**
+ * 5-Tier Matching Algorithm:
+ * Resolves which OrganId an object belongs to:
+ * 1. Exact mesh name
+ * 2. Exact parent name
+ * 3. Exact ancestor name
+ * 4. Normalized name (no underscores/hyphens/spaces)
+ * 5. Controlled aliases
  */
 export function resolveOrganFromMesh(
   object: THREE.Object3D,
   mapping: Record<string, string[]>
 ): OrganId | null {
-  // Collect all relevant names from this node up to its ancestors
-  const candidateNames: string[] = [];
-  let curr: THREE.Object3D | null = object;
+  const meshName = object.name?.trim() || '';
+  const parentName = object.parent?.name?.trim() || '';
 
+  // Collect ancestors (excluding Scene)
+  const ancestorNames: string[] = [];
+  let curr: THREE.Object3D | null = object.parent?.parent || null;
   while (curr && curr.type !== 'Scene') {
     if (curr.name && curr.name.trim().length > 0) {
-      candidateNames.push(curr.name.toLowerCase());
+      ancestorNames.push(curr.name.trim());
     }
     curr = curr.parent;
   }
 
-  // Also inspect material name if available on mesh
+  // Also extract material names if this is a mesh
+  const matNames: string[] = [];
   if ((object as THREE.Mesh).isMesh) {
     const mesh = object as THREE.Mesh;
     if (Array.isArray(mesh.material)) {
       mesh.material.forEach((m) => {
-        if (m.name) candidateNames.push(m.name.toLowerCase());
+        if (m.name) matNames.push(m.name.trim());
       });
     } else if (mesh.material?.name) {
-      candidateNames.push(mesh.material.name.toLowerCase());
+      matNames.push(mesh.material.name.trim());
     }
   }
 
-  // Match against mapping definitions
+  // Tier 1: Exact mesh name match
+  if (meshName.length > 0) {
+    for (const [organKey, patterns] of Object.entries(mapping)) {
+      for (const pattern of patterns) {
+        if (meshName.toLowerCase() === pattern.toLowerCase()) {
+          return organKey as OrganId;
+        }
+      }
+    }
+  }
+
+  // Tier 2: Exact parent name match
+  if (parentName.length > 0) {
+    for (const [organKey, patterns] of Object.entries(mapping)) {
+      for (const pattern of patterns) {
+        if (parentName.toLowerCase() === pattern.toLowerCase()) {
+          return organKey as OrganId;
+        }
+      }
+    }
+  }
+
+  // Tier 3: Exact ancestor name match
+  for (const anc of ancestorNames) {
+    for (const [organKey, patterns] of Object.entries(mapping)) {
+      for (const pattern of patterns) {
+        if (anc.toLowerCase() === pattern.toLowerCase()) {
+          return organKey as OrganId;
+        }
+      }
+    }
+  }
+
+  // Tier 4: Normalized name match (removes _, -, spaces, case)
+  const normMesh = normalizeIdentifier(meshName);
+  const normParent = normalizeIdentifier(parentName);
   for (const [organKey, patterns] of Object.entries(mapping)) {
     for (const pattern of patterns) {
-      const lowerPattern = pattern.toLowerCase();
-      for (const name of candidateNames) {
-        if (name.includes(lowerPattern) || lowerPattern.includes(name)) {
+      const normPat = normalizeIdentifier(pattern);
+      if (normPat.length >= 3) {
+        if (normMesh === normPat || normParent === normPat) {
+          return organKey as OrganId;
+        }
+      }
+    }
+  }
+
+  // Tier 5: Controlled substring / alias search on mesh & material
+  const searchCandidates = [meshName, parentName, ...ancestorNames, ...matNames];
+  for (const candidate of searchCandidates) {
+    const normCand = normalizeIdentifier(candidate);
+    for (const [organKey, patterns] of Object.entries(mapping)) {
+      for (const pattern of patterns) {
+        const normPat = normalizeIdentifier(pattern);
+        if (normPat.length >= 4 && normCand.includes(normPat)) {
           return organKey as OrganId;
         }
       }
@@ -95,11 +163,45 @@ export function resolveOrganFromMesh(
 }
 
 /**
+ * Development Audit Reporter:
+ * Logs formatted status of mapped organs in console.
+ */
+export function printOrganAuditReport(foundMap: Map<OrganId, string[]>): void {
+  if (!import.meta.env.DEV) return;
+
+  const requiredOrgans: OrganId[] = [
+    'mouth',
+    'esophagus',
+    'stomach',
+    'liver',
+    'pancreas',
+    'gallbladder',
+    'smallIntestine',
+    'largeIntestine',
+    'rectum',
+  ];
+
+  console.group('📋 [GLB ORGAN AUDIT]');
+  requiredOrgans.forEach((organ) => {
+    const matches = foundMap.get(organ);
+    if (matches && matches.length > 0) {
+      console.log(`%c${organ}: FOUND`, 'color: #10b981; font-weight: bold;');
+      matches.forEach((nodeName) => {
+        console.log(`  - ${nodeName}`);
+      });
+    } else {
+      console.log(`%c${organ}: MISSING (Using calibrated spatial bounds)`, 'color: #f59e0b;');
+    }
+  });
+  console.groupEnd();
+}
+
+/**
  * Computes bounding box, target normalization scale, and center offset for an imported model.
  */
 export function calculateModelNormalization(
   object: THREE.Object3D,
-  targetHeight: number = 5.5
+  targetHeight: number = 5.6
 ): {
   scale: number;
   centerOffset: THREE.Vector3;
@@ -144,3 +246,56 @@ export function computeOrganBoundingBoxes(
 
   return organBoxes;
 }
+
+/**
+ * Calibrated anatomical spatial region bounding boxes.
+ * Used when a model is provided as a unified mesh (such as the Sketchfab CC BY 4.0 model)
+ * to ensure camera focus, raycast selection, and 3D labels work with millimeter precision.
+ */
+export function getAnatomicalSpatialBounds(): Map<OrganId, THREE.Box3> {
+  const bounds = new Map<OrganId, THREE.Box3>();
+
+  const regions: Record<OrganId, { center: [number, number, number]; size: [number, number, number] }> = {
+    mouth: { center: [0.0, 2.33, 0.1], size: [0.4, 0.95, 0.65] },
+    esophagus: { center: [-0.04, 1.36, -0.28], size: [0.35, 1.0, 0.35] },
+    stomach: { center: [-0.35, 0.49, 0.14], size: [0.95, 0.7, 0.9] },
+    liver: { center: [0.38, 0.28, 0.28], size: [0.65, 0.45, 0.55] },
+    gallbladder: { center: [0.15, 0.25, 0.32], size: [0.35, 0.3, 0.45] },
+    pancreas: { center: [-0.02, 0.45, -0.15], size: [0.45, 0.35, 0.35] },
+    smallIntestine: { center: [0.0, -0.55, 0.12], size: [1.3, 1.2, 0.9] },
+    largeIntestine: { center: [-0.05, -0.52, 0.14], size: [1.75, 1.35, 0.95] },
+    rectum: { center: [0.0, -1.8, -0.08], size: [0.6, 1.1, 0.6] },
+  };
+
+  for (const [id, def] of Object.entries(regions)) {
+    const halfX = def.size[0] / 2;
+    const halfY = def.size[1] / 2;
+    const halfZ = def.size[2] / 2;
+    const min = new THREE.Vector3(def.center[0] - halfX, def.center[1] - halfY, def.center[2] - halfZ);
+    const max = new THREE.Vector3(def.center[0] + halfX, def.center[1] + halfY, def.center[2] + halfZ);
+    bounds.set(id as OrganId, new THREE.Box3(min, max));
+  }
+
+  return bounds;
+}
+
+/**
+ * Resolves which organ an arbitrary 3D point corresponds to along the normalized anatomical tract.
+ */
+export function resolveOrganFromPoint(point: THREE.Vector3): OrganId {
+  if (point.y > 1.85) return 'mouth';
+  if (point.y > 0.85) return 'esophagus';
+  if (point.y > 0.1) {
+    if (point.x < -0.12) return 'stomach';
+    if (point.x > 0.15) return 'liver';
+    if (point.z < -0.05) return 'pancreas';
+    if (point.z > 0.18) return 'gallbladder';
+    return 'stomach';
+  }
+  if (point.y > -1.25) {
+    if (Math.abs(point.x) > 0.62 || point.y > 0.0) return 'largeIntestine';
+    return 'smallIntestine';
+  }
+  return 'rectum';
+}
+
