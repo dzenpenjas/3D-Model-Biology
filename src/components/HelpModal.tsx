@@ -73,6 +73,16 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
           </div>
         </div>
 
+        {/* 3D Model Attribution Credit */}
+        <div className="mb-5 p-3 rounded-xl bg-slate-950/40 border border-slate-800/60 text-[11px] text-slate-400 flex items-start gap-2.5">
+          <Sparkles className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <span className="font-semibold text-slate-300 block">3D Anatomy Model:</span>
+            <span>&ldquo;Digestive-system&rdquo; by jalmer</span>
+            <span className="block text-slate-400 text-[10px] mt-0.5">Licensed under CC BY 4.0</span>
+          </div>
+        </div>
+
         <button
           onClick={onClose}
           className="w-full py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm transition-colors"

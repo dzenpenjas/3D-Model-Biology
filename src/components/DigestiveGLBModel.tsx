@@ -388,6 +388,64 @@ const ModelLoadingIndicator: React.FC = () => (
 export const DigestiveGLBModel: React.FC<
   DigestiveGLBModelProps & { fallback: React.ReactNode }
 > = ({ fallback, ...props }) => {
+  const [modelAvailable, setModelAvailable] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkModelAsset = async () => {
+      try {
+        const res = await fetch(DIGESTIVE_MODEL_CONFIG.path, { method: 'GET' });
+        if (!res.ok) {
+          if (isMounted) setModelAvailable(false);
+          return;
+        }
+
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('text/html')) {
+          if (isMounted) setModelAvailable(false);
+          return;
+        }
+
+        const blob = await res.blob();
+        const headerBlob = blob.slice(0, 32);
+        const headerBuffer = await headerBlob.arrayBuffer();
+        const headerText = new TextDecoder().decode(headerBuffer);
+
+        // Check if response is HTML error page
+        if (
+          headerText.startsWith('<') ||
+          headerText.toLowerCase().includes('!doctype') ||
+          headerText.toLowerCase().includes('html')
+        ) {
+          if (isMounted) setModelAvailable(false);
+          return;
+        }
+
+        // Validate GLB ('glTF') magic bytes or glTF JSON start ('{')
+        const isGLB = headerText.startsWith('glTF');
+        const isGLTF = headerText.trim().startsWith('{');
+
+        if (isGLB || isGLTF) {
+          if (isMounted) setModelAvailable(true);
+        } else {
+          if (isMounted) setModelAvailable(false);
+        }
+      } catch {
+        if (isMounted) setModelAvailable(false);
+      }
+    };
+
+    checkModelAsset();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (modelAvailable === null || modelAvailable === false) {
+    return <>{fallback}</>;
+  }
+
   return (
     <DigestiveGLBErrorBoundary fallback={fallback}>
       <React.Suspense fallback={<ModelLoadingIndicator />}>
